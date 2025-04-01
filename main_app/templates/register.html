@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+<title>电力隔离开关卡涩预测智能管理系统</title>
+<link rel="stylesheet" href="../static/css/register.css">
+<link rel="stylesheet" href="../static/plugins/bootstrap-3.4.1-dist/css/bootstrap.css">
+<link rel="stylesheet" href="/static/plugins/fontawesome-free-6.5.2-web/css/all.min.css">
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script src="../static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/scanboardLogin_1.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/animsition.css" />
+</head>
+<body>
+	<div class="wp animsition">
+		<div class="boardLogo">
+			<img src="/static/images/logoNw.png" width=42%>
+		</div>
+		<div class="boardLogin">
+			<div style="width: 100%; text-align: center; margin-bottom: 42px;">
+				<img src="/static/images/logoSys.png" width=85%>
+			</div>
+			<div style="width: 50%; margin: 0 auto;" >
+				<form id="formAdd" novalidate>
+					{% csrf_token %}
+					{% for field in user_info %}
+					<div class="form-group">
+						<label style="color: #fff;">{{field.label}}</label>
+						{{field}}
+						<span class="error-msg" style="color: red;">{{ field.errors.0 }}</span>
+					</div>
+					{% endfor %}
+				</form>
+				<div>
+					<button type="submit" id="zsubmit1">提交</button>
+				</div>
+				<a href="/login/" style="float: right; margin-right: 5%; margin-top: 10px; color: #FFF;">返回登录</a>
+			</div>
+			
+		</div>
+	</div>
+	<div id="particles-js"></div>
+</body>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.animsition.js"></script>
+<script src="../static/js/particles.min.js"></script>
+<script src="../static/js/app.js"></script>
+<script type="text/javascript">
+	$(".animsition").animsition({
+	    inClass               :   'fade-in',
+	    outClass              :   'fade-out',
+	    inDuration            :    800,
+	    outDuration           :    1000,
+	    linkElement           :   '.animsition-link',
+
+	    loading               :    false,
+	    loadingParentElement  :   'body',
+	    loadingClass          :   'animsition-loading',
+	    unSupportCss          : [ 'animation-duration',
+	                              '-webkit-animation-duration',
+	                              '-o-animation-duration'
+	                            ],
+	
+
+	    overlay               :   false,
+	    
+	    overlayClass          :   'animsition-overlay-slide',
+	    overlayParentElement  :   'body'
+  	});
+</script>
+<script> 
+function getCSRFToken() {
+    let cookieValue = null;
+    const name = 'csrftoken';
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // 检查该 cookie 是否以 "csrftoken=" 开头
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function bindBtnSave(){
+	const csrftoken = getCSRFToken();
+    $("#zsubmit1").click(function(){
+        //清楚错误信息
+        $(".error-msg").empty();
+        var formData = new FormData(document.getElementById("formAdd"));
+        //向后台发送数据
+        $.ajax({
+            url: "/register/",
+            type: "post",
+            data: formData,
+			headers: {
+                'X-CSRFToken': csrftoken // 添加 CSRF Token
+            },
+            contentType: false, // 告诉 jQuery 不要处理数据
+            processData: false, // 告诉 jQuery 不要设置内容类型
+            dataType: "JSON",
+            success: function(res) {
+                if(res.status){
+                    $("#formAdd")[0].reset();//清空输入框内容
+					alert("注册成功，请登录！")
+                    window.location.href = "/login/"; // 跳转到主界面
+                }
+                else{
+                    //把错误信息返回回去
+                    console.log("false");
+                    $.each(res.error,function(name,errorList) {
+                        $("#id_"+name).next().text(errorList[0]);
+                    })
+                }
+
+            }
+        })
+    });
+}
+bindBtnSave();
+
+</script>
+</html>

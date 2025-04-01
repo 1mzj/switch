@@ -1,0 +1,667 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+<!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />-->
+<!--<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">-->
+<title>电力隔离开关卡涩预测智能管理系统</title>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/echarts.min.js"></script>
+<script type="text/javascript" src="../static/js/guangdong.js"></script>
+<script type="text/javascript" src="../static/js/js.js"></script>
+<link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/scanboardLogin.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/scanboard.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/animsition.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/jquery.shCircleLoader.css" />
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.shCircleLoader-min.js"></script>
+
+
+
+<script>
+	function goBack() {
+		// 使用 history 对象的 back() 方法回退到上一个页面
+	window.history.back();
+	}
+</script>
+
+</head>
+
+<body>
+
+	<!--登录时跳转动图-->
+<div id="loader">
+	<script type="text/javascript">
+		$('#loader').shCircleLoader({color: "#00deff"});
+	</script>
+</div>
+
+<div class="scanboardWp animsition">  <!--animation-duration: 跳转延时秒数-->
+	<!--Top Start!-->
+	<div id="top">
+		<div class="wp">
+			<div class="pageTit">
+				<a href="/register/" class="sign fl a">新用户注册</a>
+				<a href="/dataWeb/" class="aa">开关运行数据统计</a>
+			</div>
+			<div class="topLogo">电力隔离开关卡涩预测智能管理系统</div>
+			<div class="right topBar">
+				<!--时间-->
+				<div class="topTime">
+					时间加载中...
+				</div>
+				<!--退出跳转和公司切换-->
+				<div>
+					<!--退出跳转-->
+					<div>
+						<a class="signOut fr" href="javascript:void(0);" onclick="logout()">退出</a>
+					</div>
+					<!--登录管理-->
+					<div>
+						<a href="/manager/" class="signOut fr" style="margin-right: 20px;">管理</a>
+					</div>
+					<!--公司切换-->
+					<div class="company fr">
+						<h3>梅州电网</h3>
+						<div class="dropdown">
+							<a href="#">梅州电网</a>
+							<a href="http://www.gd.csg.cn/">广东电网</a>
+							<a href="https://www.csg.cn/">南方电网</a>
+							<a href="http://www.sgcc.com.cn/">国家电网</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="clear: both"></div>
+		</div>
+	</div>
+	<!--Top End!-->
+
+	<!--Main Start!-->
+	<div id="main" class="wp1">
+		<div class="left">
+			<!--设备负荷电流-->
+			<div class="item">
+				<div class="itemTit">
+					<span class="border-green">开关A相电流</span>
+				</div>
+				<div class="itemCon itembg1">
+					<div id="echartC2H6" class="curve"></div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+			<!--环境温度-->
+			<div class="item">
+				<div class="itemTit">
+					<span class="border-blue">开关B相电流</span>
+				</div>
+				<div class="itemCon itembg1">
+					<div id="echartC2H4" class="curve"></div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+			<!--环境湿度-->
+			<div class="item">
+				<div class="itemTit">
+					<span class="border-orange">开关C相电流</span>
+				</div>
+				<div class="itemCon itembg1">
+					<div id="echartC2H2" class="curve"></div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+		</div>
+
+		<div class="center">
+			<!--中间输入模块-->
+			<div class="data">
+				<div class="itemTit" style="display: flex; align-items: center; width: 100%;">
+					<span style="color: #00ffff;" class="border-blue">输入面板</span>
+
+					<span style="margin: 0 auto; font-size: 20px;" id="predictionText">[   卡涩状态预测   ]</span>
+
+					<a class="signOut fr" style="margin-right: 3.5%;" onclick="togglePrediction()" >切换</a>
+				</div>
+				<form action="/index/" method="POST" style="margin-top: 10px;" id="myForm">
+					{% csrf_token %}
+					<div class="label">
+						<div class="left1">
+							<span id="input_currentA">开关A相电流：</span>
+							<input type="text" name="var_1" id="input1" oninput="validateForm()" required>
+						</div>
+						<div class="right1">
+							<span id="input_currentB">开关B相电流：</span>
+							<input type="text" name="var_2" id="input2" oninput="validateForm()" required>
+						</div>
+					</div>
+					<div class="label">
+						<div class="left1">
+							<span id="input_currentC">开关C相电流：</span>
+							<input type="text" name="var_3" id="input3" oninput="validateForm()" required>
+						</div>
+						<div class="right1">
+							<span id="input_angle">开关转动角度：</span>
+							<input type="text" name="var_4" id="input4" oninput="validateForm()" required>
+						</div>
+					</div>
+					<div class="label">
+						<div class="left1">
+							<span id="input_torque">开关主轴扭矩：</span>
+							<input type="text" name="var_5" id="input5" oninput="validateForm()" required>
+						</div>
+						<div class="right1">
+							<span>设备类型：</span>
+							<!-- <input type="text" name="ID" id="input6" oninput="validateForm()" required> -->
+							<select id="input6">
+								<option value="AAA">隔离开关</option>
+							</select>
+						</div>
+					</div>
+					<div class="label">
+						<div style="float: right; margin: 3% 40%; font-size: 18px; width: 40%;">
+							<button type="submit" id="zsubmit1" disabled>提交</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!--在运设备运行状况-->
+			<div class="item2" style="margin-top: 15px;">
+				<div class="itemTit">
+					<span style="margin-left: 0; color: #00ffff" class="border-blue">预测结果</span>
+				</div>
+				<div class="itemCon2 itembg2">
+					<div class="zsylabel">
+						<div class="left1">
+							<span style="color: #1eb6fe !important; font-size: 18px; ">开关当前卡涩状态预测：</span>
+							<!-- <input type="text"  class="zinput_style" oninput="validateForm()" required> -->
+							<span id="pred_resistance" class="zinput_style"></span>
+						</div>
+						<div class="right1">
+							<span style="color: #1eb6fe !important; font-size: 18px; ">开关未来卡涩时间预测：</span>
+							<!-- <input type="text"  class="zinput_style" oninput="validateForm()" required> -->
+							<span id="pred_temperature" class="zinput_style"></span>
+						</div>
+					</div>
+
+				
+					<div class="infoPie">
+						<ul style=" display: flex; justify-content: space-evenly; list-style-type: none;" >
+							<li class="color-green" >
+								<span class="border-green a light {% if type1 %}light1{% endif %}">正常</span>
+							</li>
+							<li class="color-orange">
+								<span class="border-orange a light {% if type2 %}light1{% endif %}">一般卡涩</span>
+							</li>
+							<li class="color-pink">
+								<span class="border-pink a light {% if type3 %}light1{% endif %}">严重卡涩</span>
+							</li>
+							<li class="color-red">
+								<span class="border-red a light {% if type4 %}light1{% endif %}">危机卡涩</span>
+							</li>
+						</ul>
+						
+					</div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+			<!--中间大地图-->
+			<div class="centerWp">
+				<div class="grid"><img src="../static/images/grid.png"></div>
+				<div class="arrow"><img src="../static/images/arrow.png"></div>
+				<div class="earth"><img src="../static/images/earth.png"></div>
+				<div id="map" class="guangdong">
+			
+			</div>
+<script>
+	let selected_dev_Value ='AAA';
+	let input_data = {};
+	let pre_model = 'TEMP';
+	
+	function selected_dev_function() {
+		let select_dev = document.getElementById("input6");
+			select_dev.addEventListener("change", function() {
+				selected_dev_Value = select_dev.value;
+				console.log("选择的值:", selected_dev_Value);
+				
+				// 在这里处理选择值的变化
+				if (selected_dev_Value === "AAA") {
+					console.log("你选择了隔离开关");
+				} else if (selected_dev_Value === "BBB") {
+					console.log("你选择了断路器");
+				} else if (selected_dev_Value === "CCC"){
+					console.log("你选择了电流互感器");
+				}
+				else{
+					console.log("你选择了接线板");
+				}
+			});
+	}
+	selected_dev_function(); // 提交表单数据
+	function togglePrediction() {
+        const predictionText = document.getElementById('predictionText');
+		const input_currentA = document.getElementById('input_currentA');
+		const input_currentB = document.getElementById('input_currentB');
+		const input_currentC = document.getElementById('input_currentC');
+		const input_angle = document.getElementById('input_angle');
+		const input_torque = document.getElementById('input_torque');
+        // 切换内容
+        if (predictionText.textContent === '[   温度预测   ]') {
+			pre_model = 'RES';
+            predictionText.textContent = '[   电阻预测   ]';
+			input_currentA.textContent = '设备温度(当前)：';
+			input_currentB.textContent = '负荷电流(当前)：';
+			input_currentC.textContent = '环境温度(当前)：';
+			input_angle.textContent = '环境湿度(当前)：';
+			input_torque.textContent = '环境风速(当前)：';
+        } else {
+			pre_model = 'TEMP';
+            predictionText.textContent = '[   温度预测   ]';
+			input_currentA.textContent = '接触电阻(当前)：';
+            input_currentB.textContent = '负荷电流(未来)：';
+            input_currentC.textContent = '环境温度(未来)：';
+            input_angle.textContent = '环境湿度(未来)：';
+            input_torque.textContent = '环境风速(未来)：';
+        }
+    }
+
+	function validateForm() {
+		let input1 = parseInt(document.getElementById("input1").value, 10);
+		let input2 = parseInt(document.getElementById("input2").value, 10);
+		let input3 = parseInt(document.getElementById("input3").value, 10);
+		let input4 = parseInt(document.getElementById("input4").value, 10);
+		let input5 = parseInt(document.getElementById("input5").value, 10);
+		if (input1 !== "" && input2 !== "" && input3 !== "" && input4 !== "" && input5 !== "" ) {
+		// 如果所有字段都已填写，启用提交按钮
+		document.getElementById("zsubmit1").disabled = false;
+		} else {
+		// 如果有任何字段为空，禁用提交按钮
+		document.getElementById("zsubmit1").disabled = true;
+		}
+
+		input_data = {
+			selected_dev_Value: selected_dev_Value,
+			input1: input1,
+			input2: input2,
+			input3: input3,
+			input4: input4,
+			input5: input5,
+			pre_model: pre_model,
+    	};
+
+	}
+	function getCSRFToken() {
+		let cookieValue = null;
+		const name = 'csrftoken';
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				// 检查该 cookie 是否以 "csrftoken=" 开头
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		
+		return cookieValue;
+	}
+
+	function send_json(){
+		const csrftoken = getCSRFToken();
+		// 发送 POST 请求到后台
+		fetch('/submit_json_data/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken,
+			},
+			body: JSON.stringify(input_data)
+			})
+			.then(response => response.json())
+			.then(result => {
+				console.log('成功:', result);
+				// 可以在这里处理后台返回的结果
+				// document.getElementById("myForm").reset();
+				if (result.status === 'success') {
+				document.getElementById('pred_resistance').textContent = result.data.resistance_value;
+				// document.getElementById('pred_current').textContent = result.data.max_current;
+				document.getElementById('pred_temperature').textContent = result.data.predicted_temperature;
+				} else {
+					console.error('错误:', result.message);
+				}
+			})
+			.catch(error => {
+				console.error('错误:', error);
+		});
+	}
+	document.getElementById("myForm").addEventListener("submit", function(event) {
+		event.preventDefault(); // 阻止表单的默认提交行为
+		// selected_dev_function(); // 提交表单数据
+		validateForm(); // 验证表单
+		send_json(); // 发送 JSON 格式的数据
+    });
+	function adjustMargin() {
+		const element = document.querySelector('.centerWp');
+		if (window.innerHeight > 1000) {
+			element.style.marginTop = '50px';
+		} else {
+			element.style.marginTop = ''; // 恢复默认样式
+		}
+	}
+
+	// 初始化时调用
+	adjustMargin();
+
+	// 监听窗口大小变化
+	window.addEventListener('resize', adjustMargin);
+
+	document.addEventListener("DOMContentLoaded", function() {
+		// 获取当前屏幕高度
+		var screenHeight = window.innerHeight;
+
+		// 创建一个 XMLHttpRequest 发送请求
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "/get_screen_height/", true);  // 替换为你实际的后端处理地址
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+		// 发送屏幕高度作为 JSON 格式的请求体
+		xhr.send(JSON.stringify({ height: screenHeight }));
+
+		// 处理返回结果
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				console.log("屏幕高度已自动发送到后端");
+			} else {
+				console.error("请求失败，状态码：" + xhr.status);
+			}
+		};
+	});
+</script>
+<script>
+	var charts = echarts.init(document.getElementById('map'));
+	var data = [
+		{name: '广州市', value: 12},
+		{name: '韶关市', value: 12},
+		{name: '深圳市', value: 12},
+		{name: '珠海市', value: 12},
+		{name: '汕头市', value: 14},
+		{name: '佛山市', value: 15},
+		{name: '江门市', value: 16},
+		{name: '湛江市', value: 18},
+		{name: '茂名市', value: 18},
+		{name: '肇庆市', value: 19},
+		{name: '惠州市', value: 21},
+		{name: '梅州市', value: 410},
+		{name: '汕尾市', value: 21},
+		{name: '河源市', value: 22},
+		{name: '阳江市', value: 23},
+		{name: '清远市', value: 24},
+		{name: '东莞市', value: 24},
+		{name: '中山市', value: 25},
+		{name: '潮州市', value: 25},
+		{name: '揭阳市', value: 25},
+		{name: '云浮市', value: 25},
+	]
+	var geoCoordMap = {
+		'广州市': [113.480637, 23.285178],
+		'韶关市': [113.591544, 24.801322],
+		'深圳市': [114.185947, 22.547],
+		'珠海市': [113.553986, 22.224979],
+		'汕头市': [116.708463, 23.37102],
+		'佛山市': [113.122717, 23.028762],
+		'江门市': [112.594942, 22.290431],
+		'湛江市': [110.364977, 21.274898],
+		'茂名市': [110.919229, 21.859751],
+		'肇庆市': [112.372529, 23.351546],
+		'惠州市': [114.412599, 23.179404],
+		'梅州市': [116.117582, 24.299112],
+		'汕尾市': [115.464238, 22.974485],
+		'河源市': [114.897802, 23.846266],
+		'阳江市': [111.975107, 21.959222],
+		'清远市': [113.051227, 23.925022],
+		'东莞市': [113.796262, 22.966237],
+		'中山市': [113.382391, 22.521113],
+		'潮州市': [116.832301, 23.661701],
+		'揭阳市': [116.255733, 23.243778],
+		'云浮市': [112.044439, 22.929801],
+	}
+	var convertData = function (data) {
+		var res = [];
+		for (var i = 0; i < data.length; i++) {
+			var geoCoord = geoCoordMap[data[i].name];
+			if (geoCoord) {
+				res.push({
+					name: data[i].name,
+					value: geoCoord.concat(data[i].value)
+				});
+			}
+		}
+		return res;
+	};
+	var option = {
+		geo: {
+			map: 'guangdong',
+			label: {
+				emphasis: {
+					show: false
+				}
+			},
+			roam: false,//禁止其放大缩小
+			itemStyle: {
+				normal: {
+					areaColor: '#4c60ff',
+					borderColor: '#002097'
+				},
+				emphasis: {
+					areaColor: '#293fff'
+				}
+			}
+		},
+		series: [{
+			name: '消费金额',
+			type: 'scatter',
+			map: 'guangdong',
+			data: convertData(data),
+			coordinateSystem: 'geo',
+			top: "3%",//组件距离容器的距离
+			zoom: 1.1,
+			selectedMode: 'single',
+			symbolSize: function (val) {
+				return val[2] / 15;
+			},
+			label: {
+				normal: {
+					formatter: '{b}',
+					show: true,//显示省份标签
+					textStyle: {color: "#fbfdfe", fontSize: 14}//省份标签字体颜色
+				},
+				emphasis: {//对应的鼠标悬浮效果
+					show: true,
+					textStyle: {color: "#323232"}
+				}
+			},
+			itemStyle: {
+				normal: {
+					borderWidth: .5,//区域边框宽度
+					borderColor: '#0550c3',//区域边框颜色
+					areaColor: "#595afc",//区域颜色
+
+				},
+
+				emphasis: {
+					show: true,
+					borderWidth: .5,
+					borderColor: '#4b0082',
+					areaColor: "#ece39e",
+				}
+			},
+
+		}]
+	}
+	charts.setOption(option)
+	window.addEventListener("resize", function () {
+		myChart.resize();
+	});
+
+
+
+
+</script>
+			</div>
+		</div>
+
+		<div class="right">
+			<!--CH4-->
+			<div class="item">
+				<div class="itemTit">
+					<span class="border-red">开关转动角度</span>
+				</div>
+				<div class="itemCon itembg1">
+					<div id="echartCH4" class="curve"></div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+			<!--H2-->
+			<div class="item">
+				<div class="itemTit">
+					<span class="border-yellow">开关主轴扭矩</span>
+				</div>
+				<div class="itemCon itembg1">
+					<div id="echartH2" class="curve"></div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+			<!--在运变压器状况-->
+			<div class="item">
+				<div class="itemTit">
+					<span class="border-seagreen">在运电力隔离开关基本信息</span>
+				</div>
+				<div class="itemCon itembg1">
+					<div class="StateBox">
+						<div class="StateTit">
+							<span>设备类型</span>
+							<span>A相电流</span>
+							<span>B相电流</span>
+							<span>C相电流</span>
+							<span>转动角度</span>
+							<span>主轴扭矩</span>
+						</div>
+						<div class="FontScroll">
+							<ul>
+								{% for obj in all_data %}
+								<li>
+									<div class="fontInner clearfix">
+										<span>{{obj.get_device_type_display}}</span>
+										<span>{{obj.currentA}}</span>
+										<span>{{obj.currentB}}</span>
+										<span>{{obj.currentC}}</span>
+										<span>{{obj.angle}}</span>
+										<span>{{obj.torque}}</span>
+									</div>
+								{% endfor %}
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="boxfoot"></div>
+			</div>
+		</div>
+	</div>
+	<!--Main End!-->
+	<!--星星背景动图-->
+	<canvas id="canvas" class="canvas"></canvas>
+</div>
+
+<!-- 错误提示模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="alert alert-danger alert-dismissible fade in" role="alert" style="margin-bottom: 0px;">
+            <div class="del_header" style="height: 25px;">
+              <span class="modal-title" id="deleteModalLabel" style="font-size: 16px; font-weight: bold; position: absolute; left: 46%; transform: translateX(-46%);">
+                删除确认
+              </span>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <p id="deleteMessage" style="font-size: 16px; font-weight: bold; padding: 0px 6px; margin-top: 10px;"></p>
+            <p id="delete_hint" style="font-size: 14px;padding: 0px 6px;">请立即处理</p>
+            <p style="text-align: right;">
+              <button id="BtnDelete" type="button" class="btn btn-danger">确 定</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+            </p>
+        </div>
+    </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../static/js/bg.js"></script>
+<script type="text/javascript" src="../static/js/scanboard.js"></script>
+<script type="text/javascript" src="../static/js/fontscroll.js"></script>
+<script type="text/javascript" src="../static/js/jquery.animsition.js"></script>
+<script type="text/javascript" src="../static/js/jquery.nicescroll.js"></script>
+<script type="text/javascript" src="../static/js/echarts.min.js"></script>
+<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=f8ffe058b8e6f5b05e8ff43ca4207393"></script>
+<!-- <script src="../static/js/jquery.min.js"></script> -->
+<!-- <script src="../static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script> -->
+<script>
+// function showDeleteModal(message) {
+//     // 设置删除提示信息
+//     document.getElementById("deleteMessage").innerText = message;
+
+//     // 显示 Bootstrap 模态框
+//     $("#deleteModal").modal("show");
+// }
+document.addEventListener("DOMContentLoaded", function() {
+    // 使用 JSON.stringify 确保模板变量被正确转义为 JSON 格式
+    var passwordWarning = JSON.parse('{{ password_warning|yesno:"true,false"|safe }}');
+    var defaultPasswordWarning = JSON.parse('{{ default_password_warning|yesno:"true,false"|safe }}');
+
+    console.log(passwordWarning); // 调试输出
+    console.log(defaultPasswordWarning); // 调试输出
+
+    if (passwordWarning && defaultPasswordWarning) {
+        alert("你的密码已超过四个月未更改，并且你正在使用默认密码，请尽快修改！");
+        sessionStorage.setItem("forceChange", "1");
+        sessionStorage.setItem("changeType", "both");
+        sessionStorage.setItem("passwordChanged", "false");
+        window.location.href = "/manager/";
+    } else if (passwordWarning) {
+        alert("你的密码已超过四个月未更改，请尽快修改！");
+        sessionStorage.setItem("forceChange", "1");
+        sessionStorage.setItem("changeType", "expired");
+        sessionStorage.setItem("passwordChanged", "false");
+        window.location.href = "/manager/";
+    } else if (defaultPasswordWarning) {
+        alert("你正在使用默认密码，请尽快修改！");
+        sessionStorage.setItem("forceChange", "1");
+        sessionStorage.setItem("changeType", "default");
+        sessionStorage.setItem("passwordChanged", "false");
+        window.location.href = "/manager/";
+    }
+});
+function logout() {
+    // 清除所有 Cookie
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+    // 重定向到 Django 处理退出逻辑的 URL
+    window.location.href = "/logout/";
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    $('.FontScroll').FontScroll({
+        time: 1000, // 滚动间隔时间（毫秒）
+        s: 'fontColor', // 高亮类名
+        num: 0 // 初始高亮的列表项索引
+    });
+});
+</script>
+</html>

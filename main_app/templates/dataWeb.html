@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>电力隔离开关卡涩预测智能管理系统</title>
+    <link rel="stylesheet" href="../static/plugins/bootstrap-3.4.1-dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/database.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <link rel="stylesheet" href="/static/plugins/fontawesome-free-6.5.2-web/css/all.min.css">
+    <link rel="stylesheet" href="/static/plugins/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.css">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script src="../static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script>
+    <script src="../static/plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+    <script src="../static/plugins/bootstrap-datetimepicker-master/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    {% block substyle %}{% endblock %}
+<style>
+  #content-0 {
+      width: 80%;
+      max-width: 1600px; /* 限制最大宽度 */
+      margin: 0 auto;    /* 保证居中 */
+  }
+  #content-1 {
+      width: 80%;
+      max-width: 1600px; /* 限制最大宽度 */
+      margin: 0 auto;    /* 保证居中 */
+  }
+</style>
+<script>
+        function goBack() {
+            // 使用 history 对象的 back() 方法回退到上一个页面
+            window.history.back();
+        }
+</script>
+</head>
+
+<body>
+<div class="bg_header">
+    <div class="header_nav fl t_title">
+      电力隔离开关数据库
+    </div> 
+</div>
+
+<nav class="navbar navbar-default">
+  <div id="content-0" class="container">
+    <!-- 标题横栏 -->
+    <div class="navbar-header">
+      <a id="nav-item-1" class="navbar-brand navbar_diy"  href="#" >隔离开关数据库记录</a>
+      <a id="nav-item-2" class="navbar-brand navbar_diy"  href="/month/" >数据月统计</a>
+      <a id="nav-item-3" class="navbar-brand navbar_diy"  href="/year/" >数据年统计</a>
+    </div>
+    <ul class="navbar-right">
+      <span class="navbar-form navbar-left" method="post">
+        <a class="btn btn-primary" href="/index/">返回主界面</a>
+      </span>
+    </ul>
+
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div>
+  <div id="content-1" class="container content-container">
+    <div class="center_text t_cos0">
+      <!--左上边框-->
+      <div class="t_line_box">
+          <i class="t_l_line"></i>
+          <i class="l_t_line"></i>
+      </div>
+      <!--右上边框-->
+      <div class="t_line_box">
+          <i class="t_r_line"></i>
+          <i class="r_t_line"></i>
+      </div>
+      <!--左下边框-->
+      <div class="t_line_box">
+          <i class="l_b_line"></i>
+          <i class="b_l_line"></i>
+      </div>
+      <!--右下边框-->
+      <div class="t_line_box">
+          <i class="r_b_line"></i>
+          <i class="b_r_line"></i>
+      </div>
+
+      <div class="table_top_heading">
+        <div class="my_float_left">
+          <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+          <span>数据操作</span>
+        </div>
+
+        <div class="my_float_right" style="margin-right: 15px;">
+          <a href="javascript:void(0);" class="btn btn-primary" onclick="submitForm()">查询</a>
+        </div>
+
+        <div class="my_float_right" >
+          <div class="form-group" style="margin-bottom: 0px;">
+            <form id="searchForm" action="/dataWeb/" method="GET">
+              <input type="text" class="form-control" placeholder="请输入设备类型" name="condition">
+            </form>
+          </div>
+        </div>
+
+        <div class="my_float_right" style="margin-right: 20px;">
+          <a href="#" class="btn btn-primary" id="add_new_data">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> 
+            添加数据
+          </a>
+        </div>
+
+      </div>
+
+      <table class="tab_sty">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>隔离开关</th>
+            <th>A相电流(mA)</th>
+            <th>B相电流(mA)</th>
+            <th>C相电流(mA)</th>
+            <th>转动角度(度)</th>
+            <th>主轴扭矩(N·mm)</th>
+            <th>录入时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in list %}
+              <tr data_id="{{obj.id}}">
+              <td>{{obj.id}}</td>
+              <td>{{obj.get_device_type_display}}</td>
+              <td>{{obj.currentA}}</td>
+              <td>{{obj.currentB}}</td>
+              <td>{{obj.currentC}}</td>
+              <td>{{obj.angle}}</td>
+              <td>{{obj.torque}}</td>
+              <td>{{obj.dev_temp}}</td>
+              <td>{{obj.add_time|date:"Y-m-d H:i:s" }}</td>
+              <td>
+                {% if obj.id %}
+                <a href="javascript:void(0);" class="btn btn-primary btn-xs edit-btn" data-id="{{ obj.id }}" data-action="edit">编辑</a>
+                <a href="javascript:void(0);" class="btn btn-danger btn-xs delete-btn" data-id="{{ obj.id }}" data-action="delete">删除</a>
+                {% endif %}
+              </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      <div class="clearfix">
+        <div style="float: right; width: 110px;margin: 20px 0px;">
+          <form method="get">
+            <div class="input-group">
+              <input type="text" name="page" class="form-control" placeholder="页码">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit">跳转</button>
+              </span>
+            </div>
+          </form>
+        </div>
+        <div style="float: right; padding-right: 5px;">
+          <nav aria-label="Page navigation">
+            <ul class="pagination">
+              {{page_string}}
+            </ul>
+          </nav>
+        </div>
+        
+      </div>
+
+    </div>
+
+</div>
+
+
+  </div>
+
+<!-- 创建任务模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+  <div class="modal-content">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title" id="myModalLabel">添加数据</h4>
+      </div>
+      <div class="modal-body">
+          <form id="formAdd" novalidate>
+              {% csrf_token %}
+              {% for field in list_switch_Form %}
+                <div class="form-group">
+                  <label>{{field.label}}</label>
+                  {{field}}
+                  <span class="error-msg" style="color: red;">{{ field.errors.0 }}</span>
+                </div>
+              {% endfor %}
+            </form>
+      </div>
+
+      <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      <button id="btnSave" type="button" class="btn btn-primary">保存</button>
+      </div>
+  </div>
+  </div>
+</div>
+
+<!-- 编辑任务模态框 -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+  <div class="modal-content">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title" id="myModalLabel">编辑数据</h4>
+      </div>
+      <div class="modal-body">
+          <form id="formEdit" novalidate>
+            <div class="form-group">
+              <label>设备类型</label>
+              <select name="device_type" class="form-control" id="id_device_type">
+                <option value="1">隔离开关</option>
+              </select>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>A相电流</label>
+              <input type="number" name="currentA" class="form-control" id="edit_currentA" required>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>B相电流</label>
+              <input type="number" name="currentB" class="form-control" id="edit_currentB" required>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>C相电流</label>
+              <input type="number" name="currentC" class="form-control" id="edit_currentC" required>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>转动角度</label>
+              <input type="number" name="angle" class="form-control" id="edit_angle" required>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>主轴扭矩</label>
+              <input type="number" name="torque" class="form-control" id="edit_torque" required>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+              <label>录入时间</label>
+              <input type="text" name="add_time" class="form-control" id="edit_add_time" required>
+              <span class="error-msg" style="color: red;"></span>
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button id="edit_btnSave" type="button" class="btn btn-primary">保存</button>
+      </div>
+  </div>
+  </div>
+</div>
+
+
+  </div>
+  </div>
+</div>
+
+<!-- 删除任务模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+  <div class="modal-content">
+      <div class="alert alert-danger alert-dismissible fade in" role="alert" style="margin-bottom: 0px;">
+          <div class="del_header" style="height: 25px;">
+            <span class="modal-title" id="deleteModalLabel" style="font-size: 16px; font-weight: bold; position: absolute; left: 46%; transform: translateX(-46%);">
+              删除确认
+            </span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <p id="deleteMessage" style="font-size: 16px; font-weight: bold; padding: 0px 6px; margin-top: 10px;"></p>
+          <p id="delete_hint" style="font-size: 14px;padding: 0px 6px;">删除的数据无法恢复，请慎重.</p>
+          <p style="text-align: right;">
+            <button id="BtnDelete" type="button" class="btn btn-danger">确 定</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+          </p>
+      </div>
+  </div>
+  </div>
+</div>
+
+
+        
+
+
+</body>
+
+<script>
+// 设置第二个导航项为选中状态
+document.getElementById('nav-item-1').classList.add('selected');
+// 移除其他导航项的选中状态
+document.getElementById('nav-item-2').classList.remove('selected');
+document.getElementById('nav-item-3').classList.remove('selected');
+const selectedContent = document.getElementById(`content-1`);
+selectedContent.style.display = 'block';
+
+
+window.onload = function () {
+  // const firstNavItem = document.getElementById('nav-item-1');
+  // selectNavItem(firstNavItem); // 默认选中第一个项 注释掉了
+  Add_data();
+  bindTimeselect();
+  bindBtnSave();
+};
+
+// 选中导航项函数，并切换对应的内容 前面会写有默认第一个选项
+function selectNavItem(selectedElement) {
+    // 获取所有导航项和内容区
+    const navItems = document.querySelectorAll('.navbar_diy');
+    const contentItems = document.querySelectorAll('.content-container');
+
+    // 清除所有导航项的选中状态
+    navItems.forEach(item => {
+        item.classList.remove('selected');
+    });
+
+    // 隐藏所有内容区
+    contentItems.forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // 设置当前选中项
+    selectedElement.classList.add('selected');
+
+    // 获取与选中项对应的内容区，并显示
+    const id = selectedElement.id.split('-')[2]; // 获取选中的导航项ID（如 1, 2, 3）
+    const selectedContent = document.getElementById(`content-${id}`);
+    selectedContent.style.display = 'block';
+}
+
+// // 事件委托方法
+// document.querySelector('.navbar-header').addEventListener('click', function(event) {
+//     if (event.target && event.target.matches('.navbar-brand')) {
+//         selectNavItem(event.target);
+//     }
+// });
+// // 选中导航项函数，并切换对应的内容.结束
+
+function getCSRFToken() {
+    let cookieValue = null;
+    const name = 'csrftoken';
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // 检查该 cookie 是否以 "csrftoken=" 开头
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function Add_data(){
+        $("#add_new_data").click(function(){
+            //显示对话框
+
+            $("#myModal").modal('show');
+        });
+    }
+
+function bindBtnSave(){
+    const csrftoken = getCSRFToken();
+    $("#btnSave").click(function(){
+        //清楚错误信息
+        $(".error-msg").empty();
+        var formData = new FormData(document.getElementById("formAdd"));
+
+        //向后台发送数据
+        $.ajax({
+            url: "/submit_new_data/",
+            type: "post",
+            data: formData,
+            contentType: false, // 告诉 jQuery 不要处理数据
+            processData: false, // 告诉 jQuery 不要设置内容类型
+            headers: {
+                'X-CSRFToken': csrftoken // 添加 CSRF Token
+            },
+            dataType: "JSON",
+            success: function(res) {
+                if(res.status){
+                    $("#formAdd")[0].reset();//清空输入框内容
+                    $("#myModal").modal("hide");
+                    location.reload(); // 刷新当前页面
+                }
+                else{
+                    //把错误信息返回回去
+                    console.log("false");
+                    $.each(res.error,function(name,errorList) {
+                        $("#id_"+name).next().text(errorList[0]);
+                    })
+                }
+
+            }
+        })
+    });
+}
+
+function bindTimeselect(){
+        $('#id_add_time').datetimepicker({
+          format: 'yyyy-mm-dd hh:ii',
+          startDate:'0',
+          language: "zh-CN",
+          autoclose: true,
+          minuteStep: 5,                // 设置分钟选择间隔为 5 分钟
+          // minView: "minute",
+        });
+        $('#edit_add_time').datetimepicker({
+          format: 'yyyy-mm-dd hh:ii',
+          startDate:'0',
+          language: "zh-CN",
+          autoclose: true,
+          minuteStep: 5,                // 设置分钟选择间隔为 5 分钟
+          // minView: "minute",
+        });
+    }
+
+function submitForm() {
+  document.getElementById("searchForm").submit();
+}
+
+$(document).ready(function () {
+  let objId = null; // 存储当前操作的对象 ID
+  let action = null; // 存储当前操作类型
+
+  // 编辑和删除按钮点击事件
+  $('.btn-xs').on('click', function () {
+    action = $(this).data('action'); // 获取操作类型
+    objId = $(this).data('id'); // 获取设备的 ID
+
+    if (action === 'edit') {
+      // 发送编辑请求
+      $.ajax({
+        url: '/operate_mes/',
+        type: 'POST',
+        data: {
+          'id': objId,
+          'action': action,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          // 动态填充输入框的值
+          $('#edit_device_type').val(response.data.device_type); // 填充设备类型
+          $('#edit_currentA').val(response.data.currentA); // 填充A相电流
+          $('#edit_currentB').val(response.data.currentB); // 填充B相电流
+          $('#edit_currentC').val(response.data.currentC); // 填充C相电流
+          $('#edit_angle').val(response.data.angle); // 填充转动角度
+          $('#edit_torque').val(response.data.torque); // 填充主轴扭矩
+          $('#edit_add_time').val(response.data.add_time); // 填充录入时间
+
+          $('#editModal').modal('show'); // 显示编辑模态框
+        },
+        error: function (error) {
+          console.error('编辑请求失败:', error);
+          alert('编辑失败，请重试！');
+        }
+      });
+    } else if (action === 'delete') {
+      $('#deleteMessage').text(`确认是否删除 ID 为 ${objId} 的信息？`);
+      // 显示删除确认模态框
+      $('#deleteModal').modal('show');
+    }
+  });
+
+  // 确认删除按钮点击事件
+  $('#BtnDelete').on('click', function () {
+    if (action === 'delete' && objId) {
+      // 发送删除请求
+      $.ajax({
+        url: '/operate_mes/',
+        type: 'POST',
+        data: {
+          'id': objId,
+          'action': action,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function () {
+          $('#deleteModal').modal('hide'); // 隐藏模态框
+          // 删除对应的行
+          $('tr[data_id="' + objId + '"]').remove();
+        },
+        error: function (error) {
+          console.error('删除请求失败:', error);
+          alert('删除失败，请重试！');
+        }
+      });
+    }
+  });
+});
+
+
+$('#edit_btnSave').click(function() {
+    // 获取表单数据
+    var formData = $('#formEdit').serialize();  // 使用serialize()获取表单中的所有数据
+    const csrftoken = getCSRFToken();
+    $.ajax({
+        url: '/save_edit/',  // 后端处理请求的URL
+        type: 'POST',
+        data: formData,  // 发送表单数据
+        headers: {
+            'X-CSRFToken': csrftoken // 添加 CSRF Token
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                
+                // 可以在这里执行一些操作，如刷新页面或关闭模态框
+                $('#editModal').modal('hide');  // 隐藏模态框
+                // alert('保存成功');
+                window.location.reload();
+            } else {
+                alert('保存失败');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+            alert('请求失败，请稍后再试');
+        }
+    });
+});
+  </script>
+</html>

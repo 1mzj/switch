@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>电力隔离开关卡涩预测智能管理系统</title>
+    <link rel="stylesheet" href="../static/plugins/bootstrap-3.4.1/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/base.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/managerweb.css">
+    <style>
+        .t_btn {
+            margin-top: 35px;
+        }
+
+        .t_btn li {
+            display: inline-block;
+            margin: 0 0 20px 20px;
+        }
+
+        .t_btn button,
+        .t_a {
+            display: inline-block;
+            padding: 10px 5px;
+            width: 80px;
+            border-style: solid;
+            border-width: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            line-height: normal;
+            margin: 0 0 0.5em 0;
+            position: relative;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            font-size: 1em;
+            background-color: #2C58A6;
+            border-color: #0263ff;
+            color: white;
+            box-shadow: 0 -2px 0 rgba(0, 0, 0, 0.2) inset !important;
+            margin-right: 0.5em;
+            border-radius: 4px;
+        }
+
+        .t_height {
+            line-height: 80px;
+            position: absolute;
+            right: 15%;
+            top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            color: #FFFFFF;
+        }
+
+        th {
+            background-color: #ffffff;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<!--header-->
+<div class="header">
+    <div class="bg_header" style="z-index: 999;">
+        <div class="header_nav fl t_title">
+            电力隔离开关卡涩预测智能管理系统
+        </div>
+        <div class="header_myself fr t_height">
+            <div class="t_btn">
+                <button id="manager_user" class="t_btn0">账户管理</button>
+                <button id="dataweb" class="t_btn3">数据库管理</button>
+                <button id="manager_log" class="t_btn14">操作日志</button>
+                <button id="go_back" class="t_a" onclick="goBack()">返回</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+        document.getElementById('manager_user').addEventListener('click', function () {
+            window.location.href = '/manager/'; // 替换为你的目标地址
+        });
+        document.getElementById('dataweb').addEventListener('click', function () {
+            window.location.href = '/dataWeb/'; // 替换为你的目标地址
+        });
+        document.getElementById('manager_log').addEventListener('click', function () {
+            window.location.href = '/manager_log/'; // 替换为你的目标地址
+        });
+        document.getElementById('go_back').addEventListener('click', function () {
+            window.location.href = '/index/'; // 替换为你的目标地址
+        });
+</script>
+</div>
+<!--main-->
+<div class="data_content">
+    <div class="data_main">
+        <div class="main_center">
+            <div class="center_text t_cos0">
+                <!--左上边框-->
+                <div class="t_line_box">
+                    <i class="t_l_line"></i>
+                    <i class="l_t_line"></i>
+                </div>
+                <!--右上边框-->
+                <div class="t_line_box">
+                    <i class="t_r_line"></i>
+                    <i class="r_t_line"></i>
+                </div>
+                <!--左下边框-->
+                <div class="t_line_box">
+                    <i class="l_b_line"></i>
+                    <i class="b_l_line"></i>
+                </div>
+                <!--右下边框-->
+                <div class="t_line_box">
+                    <i class="r_b_line"></i>
+                    <i class="b_r_line"></i>
+                </div>
+                <div class="main_title">
+                    账户管理
+                </div>
+                <div style="position: relative; top: 30px">
+                    <table class="table" id="userTable">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>用户名</th>
+                            <th>手机号码</th>
+                            <th>邮箱</th>
+                            <th>权限级别</th>
+                            <th>登录密码</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for obj in user_info %}
+                            <tr data_id="{{obj.id}}">
+                                <td>{{ obj.id }}</td>
+                                <td>{{ obj.user_name }}</td>
+                                <td>{{ obj.user_phone }}</td>
+                                <td>{{ obj.user_mail }}</td>
+                                {%  if obj.user_name == 'Mz_admin'  %}
+                                    <td>管理员</td>
+                                {% else %}
+                                    <td>普通用户</td>
+                                {%endif %}
+                                {%  if request.session.info.name == 'Mz_admin'  %}
+                                    <td><a href="javascript:void(0);" class="reset_pwd" data-id="{{ obj.id }}">重置密码</a></td>
+                                {% else %}
+                                    {% if obj.user_password %}
+                                        <td>*******</td>
+                                    {%endif %}
+                                {%endif %}
+
+
+                                {% if request.session.info.name == 'Mz_admin' %}
+                                    <td>
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-xs edit-btn" data-id="{{ obj.id }}" data-action="edit">编辑</a>
+                                        {% if obj.user_name != 'Mz_admin' %}
+                                            <a href="javascript:void(0);" class="btn btn-danger btn-xs delete-btn" data-id="{{ obj.id }}" data-action="delete">删除</a>
+                                        {% endif %}
+                                    </td>
+                                {%  elif request.session.info.id == obj.id %}
+                                <td>
+                                    <a href="javascript:void(0);" class="btn btn-primary btn-xs edit-btn" data-id="{{ obj.id }}" data-action="edit">编辑</a>
+                                    {% if obj.user_name != 'Mz_admin' %}
+                                    <a href="javascript:void(0);" class="btn btn-danger btn-xs delete-btn" data-id="{{ obj.id }}" data-action="delete">删除</a>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if request.session.info.name != obj.user_name and  request.session.info.name != 'Mz_admin' %}
+                                <td></td>
+                                {% endif %}  
+                                
+                            </tr>
+                        {% endfor %}
+                        <!-- User data will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clearfix">
+                <div style="float: right; width: 110px;margin: 20px 0px;">
+                  <form method="get">
+                    <div class="input-group">
+                      <input type="text" name="page" class="form-control" placeholder="页码">
+                      <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">跳转</button>
+                      </span>
+                    </div>
+                  </form>
+                </div>
+                <div style="float: right; padding-right: 5px;">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      {{page_string}}
+                    </ul>
+                  </nav>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 编辑任务模态框 -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" id="cancelButton2" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">编辑数据</h4>
+        </div>
+        <div class="modal-body">
+            <form id="formEdit" novalidate>
+              <div class="form-group">
+                <label>用户名</label>
+                <input type="text" name="user_name" class="form-control" id="edit_user_name" required>
+                <span class="error-msg" style="color: red;"></span>
+              </div>
+              <div class="form-group">
+                <label>用户手机号</label>
+                <input type="text" name="user_phone" class="form-control" id="edit_user_phone" required>
+                <span class="error-msg" style="color: red;"></span>
+              </div>
+              <div class="form-group">
+                <label>用户邮箱</label>
+                <input type="text" name="user_mail" class="form-control" id="edit_user_mail" required>
+                <span class="error-msg" style="color: red;"></span>
+              </div>
+              <div class="form-group">
+                <label>用户密码</label>
+                <input type="text" name="user_password" class="form-control" id="edit_user_password" required>
+                <span class="error-msg" style="color: red;"></span>
+              </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelButton1">取消</button>
+          <button id="edit_btnSave" type="button" class="btn btn-primary">保存</button>
+        </div>
+    </div>
+    </div>
+  </div>
+
+
+<!-- 删除任务模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="alert alert-danger alert-dismissible fade in" role="alert" style="margin-bottom: 0px;">
+            <div class="del_header" style="height: 25px;">
+              <span class="modal-title" id="deleteModalLabel" style="font-size: 16px; font-weight: bold; position: absolute; left: 46%; transform: translateX(-46%);">
+                删除确认
+              </span>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <p id="deleteMessage" style="font-size: 16px; font-weight: bold; padding: 0px 6px; margin-top: 10px;"></p>
+            <p id="delete_hint" style="font-size: 14px;padding: 0px 6px;">删除的数据无法恢复，请慎重.</p>
+            <p style="text-align: right;">
+              <button id="BtnDelete" type="button" class="btn btn-danger">确 定</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+            </p>
+        </div>
+    </div>
+    </div>
+</div>
+
+</body>
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script>
+<script src="../static/js/echarts.min.js"></script>
+<script src="../static/js/basenew.js"></script>
+<script>
+const userId11 = "{{ request.session.info.id }}";
+console.log("当前用户 ID:", userId11);
+document.addEventListener("DOMContentLoaded", function() {
+    // 获取 .center_text 元素
+    var element = document.querySelector('.center_text');
+
+    if (element) {
+        // 获取元素的高度
+        console.log("元素的高度是: " + element.offsetHeight + "px");
+    } else {
+        console.log("没有找到该元素");
+    }
+});
+function getCSRFToken() {
+    let cookieValue = null;
+    const name = 'csrftoken';
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // 检查该 cookie 是否以 "csrftoken=" 开头
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+let EditUsername = '';
+function handleCancelClick(event) {
+    if (!sessionStorage.getItem("passwordChanged")) {
+        alert("请按要求修改密码！");
+        event.preventDefault(); // 阻止默认行为，防止模态框关闭
+    } 
+}
+document.addEventListener("DOMContentLoaded", function () {
+    let forceChange = sessionStorage.getItem("forceChange");
+    let changeType = sessionStorage.getItem("changeType");
+    const currentUsername = "{{ request.session.info.name }}"; // 当前登录用户
+    if (forceChange === "1") {
+        // 在 user_info 表中查找当前用户的行
+        let userRow = null;
+        let cancelButton1 = document.getElementById("cancelButton1");
+        if (cancelButton1) {
+            cancelButton1.removeAttribute("data-dismiss"); // 移除 Bootstrap 的默认关闭行为
+            cancelButton1.addEventListener("click", handleCancelClick);
+        }
+        let cancelButton2 = document.getElementById("cancelButton2");
+        if (cancelButton2) {
+            cancelButton2.removeAttribute("data-dismiss"); // 移除 Bootstrap 的默认关闭行为
+            cancelButton2.addEventListener("click", handleCancelClick);
+        }
+        document.querySelectorAll("tr[data_id]").forEach(row => {
+            let usernameCell = row.querySelector("td:nth-child(2)"); // 第二列是用户名
+            if (usernameCell && usernameCell.textContent.trim() === currentUsername) {
+                userRow = row;
+            }
+        });
+        if (userRow) {
+            let userId = userRow.getAttribute("data_id");
+            console.log(userId);
+            $.ajax({
+                url: '/operate_user/',
+                type: 'POST',
+                data: {
+                    'id': userId,
+                    'action': 'edit',
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    // 动态填充输入框的值
+                    EditUsername = response.data.user_name;
+                    console.log(EditUsername);
+                    
+                    $('#edit_user_name').val(response.data.user_name);
+                    $('#edit_user_phone').val(response.data.user_phone);
+                    $('#edit_user_mail').val(response.data.user_mail);
+                    $('#edit_user_password').val(response.data.user_password);
+
+                },
+                error: function (error) {
+                    console.error('编辑请求失败:', error);
+                    alert('编辑失败，请重试！');
+                }
+            });
+
+            // 强制打开模态框，禁止背景关闭
+            $('#editModal').modal({ backdrop: 'static', keyboard: false }).modal('show');
+            $('#editModal').on('hide.bs.modal', function (e) {
+                if (!sessionStorage.getItem("passwordChanged")) {
+                    alert("请按要求修改密码！");
+                    e.preventDefault(); // 阻止关闭模态框
+                }
+            });
+            console.log('已经打开')
+            console.log(sessionStorage.getItem("passwordChanged"));
+
+        }
+    }
+
+});
+
+
+$(document).on('click', '.btn-xs', function () {
+  action = $(this).data('action'); // 获取操作类型
+  objId = $(this).data('id'); // 获取设备的 ID
+  console.log('正在编辑');
+  if (action === 'edit') {
+    // 发送编辑请求
+    $.ajax({
+      url: '/operate_user/',
+      type: 'POST',
+      data: {
+        'id': objId,
+        'action': action,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      success: function (response) {
+        // 动态填充输入框的值
+        EditUsername = response.data.user_name;
+
+        $('#edit_user_name').val(response.data.user_name);
+        $('#edit_user_phone').val(response.data.user_phone);
+        $('#edit_user_mail').val(response.data.user_mail);
+        $('#edit_user_password').val(response.data.user_password);
+
+        $('#editModal').modal('show'); // 显示编辑模态框
+      },
+      error: function (error) {
+        console.error('编辑请求失败:', error);
+        alert('编辑失败，请重试！');
+      }
+    });
+  } else if (action === 'delete') {
+    $('#deleteMessage').text(`确认是否删除 ID 为 ${objId} 的信息？`);
+    $('#deleteModal').modal('show');
+  }
+
+    // 确认删除按钮点击事件
+    $('#BtnDelete').on('click', function () {
+    if (action === 'delete' && objId) {
+      // 发送删除请求
+      $.ajax({
+        url: '/operate_user/',
+        type: 'POST',
+        data: {
+          'id': objId,
+          'action': action,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function () {
+          $('#deleteModal').modal('hide'); // 隐藏模态框
+          // 删除对应的行
+          $('tr[data_id="' + objId + '"]').remove();
+        },
+        error: function (error) {
+          console.error('删除请求失败:', error);
+          alert('删除失败，请重试！');
+        }
+      });
+    }
+  });
+
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    // 监听密码输入框变化
+        $(document).ready(function () {
+        // 监听模态框显示事件
+        $('#editModal').on('shown.bs.modal', function () {
+            console.log("编辑模态框已显示");
+
+            // 绑定密码输入框验证逻辑
+            $('#edit_user_password').off('input').on('input', function () {
+                var pwd = $(this).val();
+                var errorMsg = $(this).next('.error-msg');
+
+                if (pwd.length < 8 || !/[A-Za-z]/.test(pwd) || !/\d/.test(pwd) || !/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
+                        errorMsg.text("密码必须包含字母、数字和特殊字符，且长度至少8位！");
+                } else if (pwd === EditUsername) {  
+                    errorMsg.text("密码不能与用户名相同");  // 新增规则
+                } else {
+                    errorMsg.text(""); // 清空错误信息
+                }
+            });
+        });
+    });
+
+    $('#edit_btnSave').click(function () {
+    const csrftoken = getCSRFToken();
+    var password = $('#edit_user_password').val();
+
+    // 验证密码强度
+    if (!validatePassword(password)) {
+        alert('密码必须包含字母、数字和特殊字符，且长度至少8位！');
+        return;
+    }
+    if (!validate_pwd_name(password)) {
+        alert('密码不能和用户名相同');
+        return;
+    }
+    
+    // 获取表单数据
+    var formData = $('#formEdit').serialize();
+    console.log(formData);
+
+    $.ajax({
+        url: '/save_edit_user/',
+        type: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                sessionStorage.removeItem("forceChange");
+                sessionStorage.removeItem("changeType");
+                sessionStorage.setItem("passwordChanged", "true");
+                // 重新恢复 "取消" 按钮的 data-dismiss="modal"
+                let cancelButton1 = document.getElementById("cancelButton1");
+                let cancelButton2 = document.getElementById("cancelButton2");
+
+                if (cancelButton1) cancelButton1.setAttribute("data-dismiss", "modal");
+                if (cancelButton2) cancelButton2.setAttribute("data-dismiss", "modal");
+
+                $('#editModal').off('hide.bs.modal');
+                $('#editModal').modal('hide');
+                window.location.reload();
+            } else {
+                alert('保存失败: ' + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+            alert('请求失败，请稍后再试');
+        }
+    });
+});
+});
+// **密码验证函数**
+function validatePassword(password) {
+    var lengthCheck = password.length >= 8;
+    var letterCheck = /[A-Za-z]/.test(password);
+    var numberCheck = /\d/.test(password);
+    var specialCharCheck = /[!@#$%^&*(),.?":{}|<>]/.test(password); 
+
+    return lengthCheck && letterCheck && numberCheck && specialCharCheck ;
+}
+function validate_pwd_name(password) {
+    var notSameAsUsername = password !== EditUsername;  
+    return notSameAsUsername;
+}
+
+
+$(document).ready(function () {
+    // 监听重置密码按钮的点击事件
+    $('.reset_pwd').on('click', function () {
+        const userId = $(this).data('id'); // 获取用户 ID
+        console.log(userId);
+        // 发送 AJAX 请求到后端
+        $.ajax({
+            url: '/reset_password/', // 后端接口地址
+            type: 'POST',
+            data: {
+                'user_id': userId, // 发送用户 ID
+                'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRF Token
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert('密码重置成功！新密码为 123456');
+                } else {
+                    alert('密码重置失败：' + response.error);
+                }
+            },
+            error: function () {
+                alert('网络错误，请稍后再试。');
+            }
+        });
+    });
+  });
+</script>
+</html>

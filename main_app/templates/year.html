@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>电力隔离开关运行数据库系统</title>
+    <link rel="stylesheet" href="../static/plugins/bootstrap-3.4.1-dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/database.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <link rel="stylesheet" href="/static/plugins/fontawesome-free-6.5.2-web/css/all.min.css">
+    <link rel="stylesheet" href="/static/plugins/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.css">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script src="../static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script>
+    <script src="../static/plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+    <script src="../static/plugins/bootstrap-datetimepicker-master/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    {% block substyle %}{% endblock %}
+    <style>
+      #content-0 {
+          width: 80%;
+          max-width: 1600px; /* 限制最大宽度 */
+          margin: 0 auto;    /* 保证居中 */
+      }
+      #content-2 {
+          width: 80%;
+          max-width: 1600px; /* 限制最大宽度 */
+          margin: 0 auto;    /* 保证居中 */
+      }
+    </style>
+<script>
+        function goBack() {
+            // 使用 history 对象的 back() 方法回退到上一个页面
+            window.history.back();
+        }
+</script>
+</head>
+
+<body>
+<div class="bg_header">
+    <div class="header_nav fl t_title">
+      电力隔离开关运行数据库
+    </div> 
+</div>
+
+<nav class="navbar navbar-default">
+  <div id="content-0" class="container">
+    <!-- 标题横栏 -->
+    <div class="navbar-header">
+      <a id="nav-item-1" class="navbar-brand navbar_diy"  href="/dataWeb/" >电力隔离开关运行数据库记录</a>
+      <a id="nav-item-2" class="navbar-brand navbar_diy"  href="/month/" >数据月统计</a>
+      <a id="nav-item-3" class="navbar-brand navbar_diy"  href="/year/" >数据年统计</a>
+    </div>
+    <ul class="navbar-right">
+      <span class="navbar-form navbar-left" method="post">
+        <a class="btn btn-primary" href="/index/">返回主界面</a>
+      </span>
+    </ul>
+
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div>
+
+  <div id="content-2" class="container content-container">
+    <div class="center_text t_cos0">
+      <!--左上边框-->
+      <div class="t_line_box">
+          <i class="t_l_line"></i>
+          <i class="l_t_line"></i>
+      </div>
+      <!--右上边框-->
+      <div class="t_line_box">
+          <i class="t_r_line"></i>
+          <i class="r_t_line"></i>
+      </div>
+      <!--左下边框-->
+      <div class="t_line_box">
+          <i class="l_b_line"></i>
+          <i class="b_l_line"></i>
+      </div>
+      <!--右下边框-->
+      <div class="t_line_box">
+          <i class="r_b_line"></i>
+          <i class="b_r_line"></i>
+      </div>
+      <table class="tab_sty">
+        <thead style="height:61px">
+          <tr>
+            <th>序号</th>
+            <th>设备类型</th>
+            <th>统计时间</th>
+            <th>数量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in result %}
+          <tr>
+              <td>{% if item %}{{ forloop.counter }}{% else %}&nbsp;{% endif %}</td>
+              <td>{{ item.device_type }}</td>  <!-- 设备类型 -->
+              <td>{{ item.year }}</td>  <!-- 统计时间 -->
+              <td>{{ item.count }}</td>  <!-- 数量 -->
+              <td>
+                {% if item %}
+                <a href="javascript:void(0);" class="btn btn-primary btn-xs export-btn" data-year="{{ item.year }}" data-device-type="{{ item.device_type }}">导出</a>
+                {% else %}&nbsp;
+                {% endif %}
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+</body>
+<script>
+// 设置第二个导航项为选中状态
+document.getElementById('nav-item-3').classList.add('selected');
+document.getElementById('nav-item-1').classList.remove('selected');
+document.getElementById('nav-item-2').classList.remove('selected');
+const selectedContent = document.getElementById(`content-2`);
+selectedContent.style.display = 'block';
+
+</script>
+
+<script>
+$(document).on('click', '.export-btn', function() {
+    var year = $(this).data('year');
+    var deviceType = $(this).data('device-type');
+    console.log(deviceType);
+    console.log(year);
+    // 通过构建 URL 的方式来触发文件下载
+    var downloadUrl = '/excel_export/?year=' + year + '&device_type=' + deviceType;
+    
+    // 使用 window.location.href 触发下载
+    window.location.href = downloadUrl;
+});
+</script>
+</html>

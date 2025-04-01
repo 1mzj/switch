@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+<title>电力隔离开关卡涩预测智能管理系统</title>
+<link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/scanboardLogin_1.css" />
+<link rel="stylesheet" type="text/css" href="../static/css/animsition.css" />
+
+<style>
+    .clearfix::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+</style>
+
+</head>
+<body>
+	<div class="wp animsition">
+		<div class="boardLogo">
+			<img src="/static/images/logoNw.png" width=42%>
+		</div>
+		<div class="boardLogin">
+			<div style="width: 100%; text-align: center; margin-bottom: 42px;">
+				<img src="/static/images/logoSys.png" width=85%>
+			</div>
+			<div style="width: 50%; margin: 0 auto;" >
+				<form method="post" novalidate>
+					{% csrf_token %}
+					{% for field in login_info %}
+						{% if field.name == "user_name" %}
+							<div class="inpGroup" style="margin-bottom: 28px;">
+								<span class="loginIco1"></span>
+								{{ field }}
+								<div class="error-msg" style="color: red; position: absolute; top: 100%; left: 0; margin-top: 5px; margin-left: 15px;">{{ field.errors.0 }}</div>
+							</div>
+							 
+							<!-- <label class="error-msg" style="color: red; display: block;  margin-left: 15px;">{{ field.errors.0 }}</label> -->
+						{% elif field.name == "user_password" %}
+							<div class="inpGroup" style="margin-bottom: 28px;">
+								<span class="loginIco2"></span>
+								{{ field }}
+								<div class="error-msg" style="color: red; position: absolute; top: 100%; left: 0; margin-top: 5px; margin-left: 15px;">{{ field.errors.0 }}</div>
+							</div>
+						
+						{% else %}
+						<div>
+							<div class="inpGroup" style="margin-bottom: 28px; width: 40% !important; float: left;">
+								<span style="background: url(../static/images/log_ver.png);"></span>
+								{{ field }}
+								<div class="error-msg" style="color: red; position: absolute; top: 100%; left: 0; margin-top: 5px; margin-left: 15px;">{{ field.errors.0 }}</div>
+							</div>
+							<div style="float: right; width: 30%; margin-right: 3%; margin-top: 2px;">
+								<a href="javascript:void(0);">
+									<img id="captcha-img" src="/create_code/" height="42px" width="95%" alt="点击刷新验证码" onclick="refreshCaptcha()">
+								</a>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						{% endif %}
+				
+					{% endfor %}
+
+
+					<input type="submit" value="登 录" class="submit">
+				</form>
+					
+					<a href="/register/" style="float: right; margin-right: 5%; margin-top: 10px; color: #FFF;">立即注册</a>
+					<!-- <button class="submit">注册</button> -->
+				<!-- </form> -->
+			</div>
+			
+		</div>
+	</div>
+	<div id="particles-js"></div>
+</body>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.animsition.js"></script>
+<script src="../static/js/particles.min.js"></script>
+<script src="../static/js/app.js"></script>
+<script>
+    function refreshCaptcha() {
+        const captchaImg = document.getElementById('captcha-img');
+        // 在 URL 后加随机参数防止缓存
+        captchaImg.src = '/create_code/?' + new Date().getTime();
+    }
+
+</script>
+<script type="text/javascript">
+	$(".animsition").animsition({
+	    inClass               :   'fade-in',
+	    outClass              :   'fade-out',
+	    inDuration            :    800,
+	    outDuration           :    1000,
+	    linkElement           :   '.animsition-link',
+
+	    loading               :    false,
+	    loadingParentElement  :   'body',
+	    loadingClass          :   'animsition-loading',
+	    unSupportCss          : [ 'animation-duration',
+	                              '-webkit-animation-duration',
+	                              '-o-animation-duration'
+	                            ],
+	
+
+	    overlay               :   false,
+	    
+	    overlayClass          :   'animsition-overlay-slide',
+	    overlayParentElement  :   'body'
+  	});
+</script>
+</html>

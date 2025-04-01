@@ -1,0 +1,90 @@
+
+body{
+	background: url(../images/true.png);
+	background-size: 100% 100%;
+	filter: brightness(110%);
+}
+
+.navbar-default{
+	background-color: transparent !important;
+	border-color: transparent !important;
+}
+.bg_header {
+    width: 100%;
+    height: 80px;
+    background: url(../images/title.png) no-repeat;
+    background-size: 100% 100%;
+}
+.t_title {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 2.5em;
+    line-height: 80px;
+    color: #fff;
+}
+
+.withbg{
+	background: url(../images/bnt.png);
+	background-repeat: no-repeat;
+}
+
+.table_top_heading{
+	width: 100%;
+	height: 45px;
+	background: rgba(14, 148, 234, 0.4);
+	border-top: 1px solid #0e94ea ;
+	color: #fff;
+	font-size: 16px;
+}
+
+.my_float_left{
+	float: left;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+.my_float_right{
+	position: relative;
+	float: right;
+	margin-top: 6px;
+}
+.my_button{
+	height: 25px;
+	padding: 5px 10px;
+	background: #337ab7;
+	border-radius: 5px;
+	line-height: 25px;
+}
+.tab_sty{
+	width: 100%;
+	height: calc(100% - 45px);
+	font-size: 16px;
+}
+.tab_sty tr{
+	border-top:1px solid #0e94ea;
+	background: rgba(14, 148, 234, 0.1);
+
+}
+.tab_sty tr td{
+	color: #cdddf7;
+	border-right: 1px solid #0e94ea;
+	text-align: center;
+	
+}
+
+.tab_sty tr td a{
+	position: relative;
+}
+.tab_sty tr th{
+	color: #cdddf7;
+	text-align: center;
+	height: 42px;
+}
+tbody tr {
+	height:41px;
+}
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}

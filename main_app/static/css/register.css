@@ -1,0 +1,17 @@
+#zsubmit1{
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    height: 34px;
+    line-height: 32px;
+    text-align: center;
+    border: 1px solid #01d1f2;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    -webkit-transition: 0.3s ease-in-out;
+    -moz-transition: 0.3s ease-in-out;
+    -ms-transition: 0.3s ease-in-out;
+    -o-transition: 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
+}

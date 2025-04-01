@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>电力隔离开关卡涩预测智能管理系统</title>
+    <link rel="stylesheet" href="../static/plugins/bootstrap-3.4.1/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/base.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/managerweb.css">
+    <style>
+        .t_btn {
+            margin-top: 35px;
+        }
+
+        .t_btn li {
+            display: inline-block;
+            margin: 0 0 20px 20px;
+        }
+
+        .t_btn button,
+        .t_a {
+            display: inline-block;
+            padding: 10px 5px;
+            width: 80px;
+            border-style: solid;
+            border-width: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            line-height: normal;
+            margin: 0 0 0.5em 0;
+            position: relative;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            font-size: 1em;
+            background-color: #2C58A6;
+            border-color: #0263ff;
+            color: white;
+            box-shadow: 0 -2px 0 rgba(0, 0, 0, 0.2) inset !important;
+            margin-right: 0.5em;
+            border-radius: 4px;
+        }
+
+        .t_height {
+            line-height: 80px;
+            position: absolute;
+            right: 15%;
+            top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            color: #FFFFFF;
+        }
+
+        th {
+            background-color: #ffffff;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<!--header-->
+<div class="header">
+    <div class="bg_header" style="z-index: 999;">
+        <div class="header_nav fl t_title">
+            电力隔离开关卡涩预测智能管理系统
+        </div>
+        <div class="header_myself fr t_height">
+            <div class="t_btn">
+                <button id="manager_user" class="t_btn0">账户管理</button>
+                <button id="dataweb" class="t_btn3">数据库管理</button>
+                <button id="manager_log" class="t_btn14">操作日志</button>
+                <button id="go_back" class="t_a" onclick="goBack()">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('manager_user').addEventListener('click', function () {
+            window.location.href = '/manager/'; // 替换为你的目标地址
+        });
+        document.getElementById('dataweb').addEventListener('click', function () {
+            window.location.href = '/dataWeb/'; // 替换为你的目标地址
+        });
+        document.getElementById('manager_log').addEventListener('click', function () {
+            window.location.href = '/manager_log/'; // 替换为你的目标地址
+        });
+        document.getElementById('go_back').addEventListener('click', function () {
+            window.location.href = '/index/'; // 替换为你的目标地址
+        });
+        // function goBack() {
+        //     // 使用 history 对象的 back() 方法回退到上一个页面
+        //     window.history.back();
+        // }
+    </script>
+</div>
+<!--main-->
+<div class="data_content">
+    <div class="data_main">
+        <div class="main_center">
+            <div class="center_text t_cos0">
+                <!--左上边框-->
+                <div class="t_line_box">
+                    <i class="t_l_line"></i>
+                    <i class="l_t_line"></i>
+                </div>
+                <!--右上边框-->
+                <div class="t_line_box">
+                    <i class="t_r_line"></i>
+                    <i class="r_t_line"></i>
+                </div>
+                <!--左下边框-->
+                <div class="t_line_box">
+                    <i class="l_b_line"></i>
+                    <i class="b_l_line"></i>
+                </div>
+                <!--右下边框-->
+                <div class="t_line_box">
+                    <i class="r_b_line"></i>
+                    <i class="b_r_line"></i>
+                </div>
+                <div class="main_title">
+                    操作日志
+                </div>
+                <div style="position: relative; top: 30px; height: 100%; overflow: auto">
+                    <table class="table">
+                        <thead style="position: sticky; top: 0;">
+                        <tr>
+                            <th>序号</th>
+                            <th>用户名</th>
+                            <th>手机号码</th>
+                            <th>事件类型</th>
+                            <th>操作时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for obj in log_info %}
+                            <tr>
+                                <td>{{ obj.id }}</td>
+                                <td>{{ obj.user_name }}</td>
+                                <td>{{ obj.user_phone }}</td>
+                                <td>{{ obj.get_event_type_display }}</td>
+                                <td>{{ obj.record_time|date:"Y-m-d H:i" }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="clearfix">
+                <div style="float: right; width: 110px;margin: 20px 0px;">
+                  <form method="get">
+                    <div class="input-group">
+                      <input type="text" name="page" class="form-control" placeholder="页码">
+                      <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">跳转</button>
+                      </span>
+                    </div>
+                  </form>
+                </div>
+                <div style="float: right; padding-right: 5px;">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      {{page_string}}
+                    </ul>
+                  </nav>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/plugins/bootstrap-3.4.1-dist/js/bootstrap.js"></script>
+<script src="../static/js/echarts.min.js"></script>
+<script src="../static/js/basenew.js"></script>
+
+</html>
