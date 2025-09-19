@@ -50,7 +50,8 @@ from django.contrib.auth import logout
 
 from django_ratelimit.decorators import ratelimit
 from django.http import JsonResponse
-
+import os
+from .Pre_model.switch_stuck_pre import run_stuck_diagnosis
 @ratelimit(key='ip', rate='20/m', method='POST', block=True)
 def my_view(request):
     return JsonResponse({'message': 'Success'})
@@ -941,3 +942,45 @@ def get_char_data(request):
                'currentC': item['currentC'],'angle': item['angle'],'torque': item['torque']} for item in data]
     return JsonResponse(result, safe=False)
     
+
+# 配置文件上传目录（建议在main_app内新建uploads文件夹，用于临时存储上传的TXT文件）
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+# 确保上传目录存在，不存在则创建
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+from django.core.files.storage import FileSystemStorage
+@csrf_exempt
+def stuck_diagnosis_api(request):
+    """调整为：接收上传的TXT文件，保存后执行诊断"""
+    if request.method == "POST":
+        # 1. 检查是否有文件上传
+        if 'diagnosis_file' not in request.FILES:
+            return JsonResponse({"status": "error", "msg": "请上传待诊断的TXT文件"})
+        
+        # 2. 获取上传的文件对象
+        uploaded_file = request.FILES['diagnosis_file']
+        # 检查文件类型（避免非TXT文件上传，前端已限制，后端二次校验更安全）
+        if not uploaded_file.name.endswith('.txt'):
+            return JsonResponse({"status": "error", "msg": "仅支持TXT格式文件，请重新选择"})
+        
+        # 3. 保存上传的文件到UPLOAD_DIR目录
+        # 使用FileSystemStorage保存（Django原生工具，避免路径问题）
+        fs = FileSystemStorage(location=UPLOAD_DIR)
+        # 保存文件（若同名文件已存在，会自动添加后缀避免覆盖，如“合闸150N1_1.txt”）
+        saved_file_name = fs.save(uploaded_file.name, uploaded_file)
+        # 获取保存后的文件绝对路径（用于诊断函数调用）
+        saved_file_path = fs.path(saved_file_name)
+        print(f"文件已保存：{saved_file_path}")
+
+        # 4. 调用诊断函数，传入保存后的文件路径
+        diagnosis_result = run_stuck_diagnosis(saved_file_path)
+
+        # 5. 补充上传文件名到结果中（前端展示用）
+        if diagnosis_result["status"] == "success":
+            diagnosis_result["file_name"] = uploaded_file.name  # 显示原始上传文件名，不是保存后的文件名
+
+        # 6. 返回诊断结果
+        return JsonResponse(diagnosis_result)
+
+    # 非POST请求返回错误
+    return JsonResponse({"status": "error", "msg": "请使用POST请求上传文件"})

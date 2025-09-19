@@ -46,6 +46,7 @@ urlpatterns = [
 
     path('get_screen_height/', views.get_screen_height),
     path('get_char_data/', views.get_char_data),
+    path('api/stuck-diagnosis/', views.stuck_diagnosis_api,),
     
     
 ]
