@@ -808,7 +808,7 @@ def operate_user(request):
                 )
 
                 list_update = Update_ID(models.Userlist)
-                if user_name != "Mz_admin":
+                if user_name != "admin":
                     logout(request)
                     return redirect('/login/')
                 return JsonResponse({'status': 'success', 'message': '删除成功！'})
@@ -834,8 +834,8 @@ def save_edit_user(request):
             old_password = obj.user_password
             new_password = md5(user_password)
             # 检查字段是否有变化，如果变化则更新字段
-            if obj.user_name == 'Mz_admin':
-                if user_name != 'Mz_admin':
+            if obj.user_name == 'admin':
+                if user_name != 'admin':
                     # Edit_user_id = None
                     return JsonResponse({'status': 'error', 'message': '系统管理员名称无法修改'})
                 if old_password != new_password:

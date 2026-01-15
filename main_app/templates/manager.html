@@ -158,12 +158,12 @@
                                 <td>{{ obj.user_name }}</td>
                                 <td>{{ obj.user_phone }}</td>
                                 <td>{{ obj.user_mail }}</td>
-                                {%  if obj.user_name == 'Mz_admin'  %}
+                                {%  if obj.user_name == 'admin'%}
                                     <td>管理员</td>
                                 {% else %}
                                     <td>普通用户</td>
                                 {%endif %}
-                                {%  if request.session.info.name == 'Mz_admin'  %}
+                                {%  if request.session.info.name == 'admin'  %}
                                     <td><a href="javascript:void(0);" class="reset_pwd" data-id="{{ obj.id }}">重置密码</a></td>
                                 {% else %}
                                     {% if obj.user_password %}
@@ -172,23 +172,23 @@
                                 {%endif %}
 
 
-                                {% if request.session.info.name == 'Mz_admin' %}
+                                {% if request.session.info.name == 'admin' %}
                                     <td>
                                         <a href="javascript:void(0);" class="btn btn-primary btn-xs edit-btn" data-id="{{ obj.id }}" data-action="edit">编辑</a>
-                                        {% if obj.user_name != 'Mz_admin' %}
+                                        {% if obj.user_name != 'admin' %}
                                             <a href="javascript:void(0);" class="btn btn-danger btn-xs delete-btn" data-id="{{ obj.id }}" data-action="delete">删除</a>
                                         {% endif %}
                                     </td>
                                 {%  elif request.session.info.id == obj.id %}
                                 <td>
                                     <a href="javascript:void(0);" class="btn btn-primary btn-xs edit-btn" data-id="{{ obj.id }}" data-action="edit">编辑</a>
-                                    {% if obj.user_name != 'Mz_admin' %}
+                                    {% if obj.user_name != 'admin' %}
                                     <a href="javascript:void(0);" class="btn btn-danger btn-xs delete-btn" data-id="{{ obj.id }}" data-action="delete">删除</a>
                                     {% endif %}
                                 </td>
                                 {% endif %}
 
-                                {% if request.session.info.name != obj.user_name and  request.session.info.name != 'Mz_admin' %}
+                                {% if request.session.info.name != obj.user_name and  request.session.info.name != 'admin' %}
                                 <td></td>
                                 {% endif %}  
                                 

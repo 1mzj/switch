@@ -29,7 +29,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 关闭浏览器不会立刻失效
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '172.31.2.11','192.168.31.152','10.192.125.50','192.168.1.200']
+ALLOWED_HOSTS = ['127.0.0.1', '172.31.2.11','192.168.31.152','10.192.125.50','192.168.1.200','192.168.0.181']
 
 
 # Application definition
@@ -133,28 +133,55 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# ================== 日志配置 ==================
+import os
+
 LOG_DIR = "D:/codeProject/logs"
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)  # 自动创建日志目录
+os.makedirs(LOG_DIR, exist_ok=True)
+
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'django_security.log'),
-            'when': 'midnight',  # 每天午夜备份
-            'interval': 1,  # 备份周期
-            'backupCount': 30,  # 保留 30 天的日志
-            'encoding': 'utf-8',
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    # ---------- 格式 ----------
+    "formatters": {
+        "security_fmt": {
+            # 你要的【】格式
+            "format": "【%(asctime)s】 %(levelname)s %(name)s %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': True,
+
+    # ---------- 处理器 ----------
+    "handlers": {
+        "security_file": {
+            "level": "WARNING",
+            # 并发安全（Windows 必须）
+            "class": "concurrent_log_handler.ConcurrentTimedRotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "django_security.log"),
+            "when": "midnight",        # 每天一个文件
+            "interval": 1,             # 当天一个文件"
+            "backupCount":180,         # 保留 180 天      
+            "encoding": "utf-8",
+            "formatter": "security_fmt",
+        },
+    },
+
+    # ---------- 日志器 ----------
+    "loggers": {
+        # 1️⃣ 你手动写的安全日志
+        "django.security": {
+            "handlers": ["security_file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+
+        # 2️⃣ 404 / 500 请求错误（推荐加）
+        "django.request": {
+            "handlers": ["security_file"],
+            "level": "WARNING",
+            "propagate": False,
         },
     },
 }
+# ================== 日志配置结束 ==================
